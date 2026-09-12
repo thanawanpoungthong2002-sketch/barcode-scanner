@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบสแกนสินค้า</title>
+</head>
+<body style="font-family:Arial;text-align:center;padding:30px">
+  <h2>📦 ระบบสแกนสินค้า</h2>
+
+  <button onclick="startScan()"
+    style="font-size:20px;padding:15px;margin-bottom:15px;">
+    📷 เปิดกล้องสแกน
+  </button>
+
+  <div id="reader" style="width:100%;max-width:500px;margin:0 auto;"></div>
+
+  <input id="barcode" type="text"
+    placeholder="สแกน Barcode ที่นี่"
+    style="font-size:20px;padding:15px;width:90%;margin-top:15px;">
+
+  <button onclick="save()"
+    style="font-size:20px;padding:15px;margin-top:15px;">
+    บันทึก
+  </button>
+
+  <h3 id="result"></h3>
+
+  <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOVlPxrPU_CCActNMbZAf2i9v4JfFwEOGGrfkAwGCAFQA6jvhP0990dYBv7F34vDsqIQ/exec";
+
+    function onScanSuccess(decodedText) {
+      document.getElementById("barcode").value = decodedText;
+      save();
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    function startScan() {
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        onScanSuccess
+      ).catch(err => {
+        alert("เปิดกล้องไม่สำเร็จ: " + err);
+      });
+    }
+
+    function save() {
+      const code = document.getElementById("barcode").value.trim();
+
+      if (!code) {
+        alert("กรุณาสแกน Barcode");
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = APPS_SCRIPT_URL + "?code=" + encodeURIComponent(code) + "&callback=handleResult";
+      document.body.appendChild(script);
+    }
+
+    function handleResult
