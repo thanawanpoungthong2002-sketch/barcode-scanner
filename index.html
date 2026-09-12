@@ -46,18 +46,26 @@
         alert("เปิดกล้องไม่สำเร็จ: " + err);
       });
     }
+function save() {
+  const code = document.getElementById("barcode").value.trim();
 
-    function save() {
-      const code = document.getElementById("barcode").value.trim();
+  if (!code) {
+    alert("กรุณาสแกน Barcode");
+    return;
+  }
 
-      if (!code) {
-        alert("กรุณาสแกน Barcode");
-        return;
-      }
+  const script = document.createElement("script");
+  script.src = APPS_SCRIPT_URL + "?code=" + encodeURIComponent(code) + "&callback=handleResult";
+  script.onerror = function() {
+    alert("เชื่อมต่อ Apps Script ไม่สำเร็จ! เช็ก URL หรือ Deploy อีกครั้ง");
+  };
+  document.body.appendChild(script);
 
-      const script = document.createElement("script");
-      script.src = APPS_SCRIPT_URL + "?code=" + encodeURIComponent(code) + "&callback=handleResult";
-      document.body.appendChild(script);
+  setTimeout(function() {
+    if (!document.getElementById("result").innerHTML) {
+      alert("รอผลลัพธ์นานเกินไป อาจมีปัญหาที่ Apps Script");
     }
+  }, 5000);
+}
 
-    function handleResult
+    
